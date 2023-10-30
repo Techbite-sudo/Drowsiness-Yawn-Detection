@@ -15,7 +15,7 @@ Simple code in python to detect Drowsiness and Yawn and alert the user using Dli
 ## Run 
 
 ```
-Python3 drowsiness_yawn.py -- webcam 0		//For external webcam, use the webcam number accordingly
+python drowsiness_yawn.py --webcam 0 --ear-thresh 0.2 --ear-frames 40 --yawn-thresh 25		//For external webcam, use the webcam number accordingly
 ```
 
 ## Setups
@@ -30,7 +30,7 @@ YAWN_THRESH = 10`	//change this according to the distance from the camera
 
 ## Acknowledgments
 
-* https://www.pyimagesearch.com/
+<!-- * https://www.pyimagesearch.com/ -->
 
 
 

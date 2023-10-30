@@ -11,6 +11,10 @@ import time
 import dlib
 import cv2
 import os
+import pygame.mixer
+
+pygame.mixer.init()
+pygame.mixer.music.load("music.wav")
 
 def alarm(msg):
     global alarm_status
@@ -18,16 +22,24 @@ def alarm(msg):
     global saying
 
     while alarm_status:
+        print('Playing audio alert...')
+        pygame.mixer.music.play()
+        
         print('call')
         s = 'espeak "'+msg+'"'
         os.system(s)
+        
 
     if alarm_status2:
+        print('Playing audio alert...')
+        pygame.mixer.music.play()
+        
         print('call')
         saying = True
         s = 'espeak "' + msg + '"'
         os.system(s)
         saying = False
+        
 
 def eye_aspect_ratio(eye):
     A = dist.euclidean(eye[1], eye[5])
@@ -69,11 +81,17 @@ def lip_distance(shape):
 ap = argparse.ArgumentParser()
 ap.add_argument("-w", "--webcam", type=int, default=0,
                 help="index of webcam on system")
+ap.add_argument("--ear-thresh", type=float, default=0.3,
+                help="eye aspect ratio threshold for drowsiness detection")
+ap.add_argument("--ear-frames", type=int, default=30,
+                help="consecutive frames for drowsiness detection")
+ap.add_argument("--yawn-thresh", type=int, default=20,
+                help="yawn threshold for alert")
 args = vars(ap.parse_args())
 
-EYE_AR_THRESH = 0.3
-EYE_AR_CONSEC_FRAMES = 30
-YAWN_THRESH = 20
+EYE_AR_THRESH = args["ear_thresh"]
+EYE_AR_CONSEC_FRAMES = args["ear_frames"]
+YAWN_THRESH = args["yawn_thresh"]
 alarm_status = False
 alarm_status2 = False
 saying = False
@@ -130,6 +148,7 @@ while True:
                 if alarm_status == False:
                     alarm_status = True
                     t = Thread(target=alarm, args=('wake up sir',))
+                    # t = Thread(target=alarm)
                     t.deamon = True
                     t.start()
 
@@ -146,6 +165,7 @@ while True:
                 if alarm_status2 == False and saying == False:
                     alarm_status2 = True
                     t = Thread(target=alarm, args=('take some fresh air sir',))
+                    # t = Thread(target=alarm)
                     t.deamon = True
                     t.start()
         else:
@@ -165,3 +185,7 @@ while True:
 
 cv2.destroyAllWindows()
 vs.stop()
+
+
+# run script
+# python drowsiness_yawn.py --webcam 0 --ear-thresh 0.2 --ear-frames 40 --yawn-thresh 25
